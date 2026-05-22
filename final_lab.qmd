@@ -74,3 +74,36 @@ indiv_data |>
                           injury, insurance),
                 .fns = as.factor))
 ```
+
+
+
+
+##Questions
+
+**3. We want to analyze different median household healthcare spending per commune. Which commune had the lowest ‘median’ household spending for healthcare over 12 months? Which commune had the highest? Write a function that identifies the minimum and maximum household spending. **
+
+```{r}
+# solution
+
+min_max_hspending <- function(data, commune_var, spending_var){
+  
+  hhspending <- data |>
+    group_by({{commune_var}}) |>
+    summarise(median_spending = median({{spending_var}}, na.rm = T))
+  
+  minimum <- hhspending |>
+    slice_min(median_spending)
+  
+  
+  maximum <- hhspending |>
+    slice_max(median_spending)
+  
+  list(
+    minimum = minimum,
+    maximum = maximum
+  )
+}
+
+min_max_hspending(household_data, commune, lnexp12m)
+
+```
