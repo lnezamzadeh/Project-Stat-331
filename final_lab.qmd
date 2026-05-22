@@ -12,6 +12,26 @@ execute:
   message: false
 ---
 
+## The Data
+
+In this lab, we’re going to be analyzing two datasets regarding healthcare use in Vietnam at both the individual and household levels. This data was collected from the World Bank’s Vietnam Living Standards Survey of 1997-1998. The data comes to us from [Vincent Arel-Bundock ](https://vincentarelbundock.github.io/Rdatasets/datasets.html). The larger study can be found [here]:( https://microdata.worldbank.org/index.php/catalog/2694)
+
+A detailed distribution of the data at the individual level can be found [here]: (https://vincentarelbundock.github.io/Rdatasets/doc/camerondata/vietnam_ind.html)
+
+These variables include:
+- `injury` – 1 if injury during survey period 
+- `actdays` – number of days of limited activity
+- `pharvis` – number of direct pharmacy visits 
+- `lnhhexp` – total household expenditure for the year (ln)
+
+A detailed description of the data at the household level can be found [here]: (https://vincentarelbundock.github.io/Rdatasets/doc/camerondata/vietnam_hh.html)
+
+These variables include: 
+- `hhsize` – household size 
+- `lnhhexp` – total household expenditure for the year (ln)
+- `lnexp12m` – household healthcare expenditure in the past 12 months (ln)
+
+
 **0. Load the appropriate libraries and the datasets.**
 
 ```{r setup}
