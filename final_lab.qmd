@@ -1,28 +1,56 @@
 ---
-title: "STAT 331 Final Project Lab"
-author: Lena Nezamzadeh, Ria Bhatia
-embed-resources: true
-format: html
-editor: visual
+title: "Final Lab Project"
+author: "Lena Nezamzadeh, Ria Bhatia"
+format: 
+  html:  
+    code-tools: true
+    toc: true
+editor: source
+execute: 
+  echo: true
+  warning: false
+  message: false
 ---
 
-## Quarto
+**0. Load the appropriate libraries and the datasets.**
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+```{r setup}
+# load libraries
 
-## Running Code
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(purrr)
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
-```{r}
-1 + 4
 ```
 
-You can add options to executable code like this
+```{r load_data}
+# load data
 
-```{r}
-#| echo: false
-2 * 2
+household_data <- read_csv(file = "vietnam_hh.csv")
+indiv_data <- read_csv(file = "vietnam_ind.csv")
+
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+## Cleaning the data
+
+**1. Let’s focus only on the `indiv_data` data. Create a dataset called `clean_indiv_data` using one `dplyr` pipeline that:**
+
+- **renames the `sex` variable to `respondent_male`,**
+- **creates a non-log version of household expenditure called `household_exp`,**
+- **changes data types where needed (e.g., `commune` is stored as a numeric variable, but it is really a commune code representing categories rather than numerical values), and**
+- **only keeping the columns we will use – `commune`, `respondent_male`, `age`, `educ`, `illness`, `injury`, `illdays`, `insurance`, `lnhhexp`, and `household_exp`.**
+
+
+
+```{r}
+# solution 
+
+indiv_data |> 
+  select(commune, age, educ, illness, injury, illdays, 
+         insurance, lnhhexp, respondent_male = sex) |> 
+  mutate(household_exp = exp(lnhhexp)) |>
+  mutate(across(.cols = c(commune, respondent_male,
+                          injury, insurance),
+                .fns = as.factor))
+```
