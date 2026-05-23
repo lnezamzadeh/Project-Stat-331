@@ -2,37 +2,49 @@
 title: "Final Lab Project"
 author: "Lena Nezamzadeh, Ria Bhatia"
 format: 
-  html:  
+  html:
+    embed-resources: true
     code-tools: true
     toc: true
+    html-table-processing: none
 editor: source
 execute: 
+  error: true
   echo: true
-  warning: false
   message: false
+  warning: false 
 ---
 
 ## The Data
 
-In this lab, we’re going to be analyzing two datasets regarding healthcare use in Vietnam at both the individual and household levels. This data was collected from the World Bank’s Vietnam Living Standards Survey of 1997-1998. The data comes to us from [Vincent Arel-Bundock ](https://vincentarelbundock.github.io/Rdatasets/datasets.html). The larger study can be found [here]:( https://microdata.worldbank.org/index.php/catalog/2694)
+In this lab, we will analyze two datasets related to healthcare use in Vietnam at both the individual and household levels. This data comes from the World Bank's Vietnam Living Standards Survey conducted in 1997-1998 and was made available through [Vincent Arel-Bundock ](https://vincentarelbundock.github.io/Rdatasets/datasets.html). 
 
-A detailed distribution of the data at the individual level can be found [here]: (https://vincentarelbundock.github.io/Rdatasets/doc/camerondata/vietnam_ind.html)
+The larger study can be found [here]( https://microdata.worldbank.org/index.php/catalog/2694).
 
-These variables include:
-- `injury` – 1 if injury during survey period 
+#### Individual-Level Dataset
+
+Documentation for the individual-level dataset can be found  [here](https://vincentarelbundock.github.io/Rdatasets/doc/camerondata/vietnam_ind.html).
+
+
+Some variables in this dataset include:
+
+- `injury` – whether the individual experienced an injury during the survey period
 - `actdays` – number of days of limited activity
 - `pharvis` – number of direct pharmacy visits 
-- `lnhhexp` – total household expenditure for the year (ln)
+- `lnhhexp` – log of total household expenditure for the year
 
-A detailed description of the data at the household level can be found [here]: (https://vincentarelbundock.github.io/Rdatasets/doc/camerondata/vietnam_hh.html)
+#### Household-Level Dataset
 
-These variables include: 
+Documentation for the household-level dataset can be found  [here](https://vincentarelbundock.github.io/Rdatasets/doc/camerondata/vietnam_hh.html).
+
+Some variables in this dataset include:
+
 - `hhsize` – household size 
-- `lnhhexp` – total household expenditure for the year (ln)
-- `lnexp12m` – household healthcare expenditure in the past 12 months (ln)
+- `lnhhexp` – log of total household expenditure for the year
+- `lnexp12m` – log of household healthcare expenditure over the past 12 months
 
 
-**0. Load the appropriate libraries and the datasets.**
+**0. Load any libraries you think will be useful for this lab.**
 
 ```{r setup}
 # load libraries
@@ -40,9 +52,10 @@ These variables include:
 library(tidyverse)
 library(knitr)
 library(kableExtra)
-library(purrr)
 
 ```
+
+**1. The files for this lab are named `vietnam_hh.csv` and `vietnam_ind.csv`. Load both datasets into R.**
 
 ```{r load_data}
 # load data
@@ -54,56 +67,113 @@ indiv_data <- read_csv(file = "vietnam_ind.csv")
 
 ## Cleaning the data
 
-**1. Let’s focus only on the `indiv_data` data. Create a dataset called `clean_indiv_data` using one `dplyr` pipeline that:**
+**2a. Individual-Level Data**
+
+**Let’s focus only on the `indiv_data` data. Create a dataset called `clean_indiv_data` using one `dplyr` pipeline that:**
 
 - **renames the `sex` variable to `respondent_male`,**
 - **creates a non-log version of household expenditure called `household_exp`,**
-- **changes data types where needed (e.g., `commune` is stored as a numeric variable, but it is really a commune code representing categories rather than numerical values), and**
+- **changes variable types where needed (e.g., `commune` is stored as a numeric variable, but it is really a commune code representing categories rather than numerical values), and**
 - **only keeping the columns we will use – `commune`, `respondent_male`, `age`, `educ`, `illness`, `injury`, `illdays`, `insurance`, `lnhhexp`, and `household_exp`.**
 
 
 
 ```{r}
-# solution 
+# solution for question 2a
 
-indiv_data |> 
+clean_indiv_data <- indiv_data |> 
   select(commune, age, educ, illness, injury, illdays, 
          insurance, lnhhexp, respondent_male = sex) |> 
-  mutate(household_exp = exp(lnhhexp)) |>
-  mutate(across(.cols = c(commune, respondent_male,
+  mutate(household_exp = exp(lnhhexp),
+         across(.cols = c(commune, respondent_male,
                           injury, insurance),
                 .fns = as.factor))
 ```
 
 
+**2b. Household-Level Data**
 
+**Now let’s clean the `household_data` data. Create a dataset called `clean_household_data` using one `dplyr` pipeline that:**
 
-##Questions
+- **creates a non-log version of yearly household expenditure called `household_exp`,**
+- **creates a non-log version of yearly healthcare expenditure called `healthcare_exp`,**
+- **changes variable types where needed (e.g., `commune` is stored as a numeric variable, but it represents categories rather than numerical values), and**
+- **only keeps the columns we will use – `commune`, `hhsize`, `lnhhexp`, `lnexp12m`, `household_exp`, and `healthcare_exp`.**
 
-**3. We want to analyze different median household healthcare spending per commune. Which commune had the lowest ‘median’ household spending for healthcare over 12 months? Which commune had the highest? Write a function that identifies the minimum and maximum household spending. **
+::: {.callout-note}
+Some households have missing values for `lnexp12m`. Keep this in mind when calculating summary statistics later in the lab.
+
+Additionally, the original dataset documentation does not clearly specify the units of expenditure after reversing the log transformation. For this lab, interpret `household_exp` and `healthcare_exp` as expenditures on the original (non-log) scale.
+:::
+
 
 ```{r}
-# solution
+# solution for question 2b
 
-min_max_hspending <- function(data, commune_var, spending_var){
+clean_household_data <- household_data |> 
+  select(commune, hhsize, lnhhexp, lnexp12m) |> 
+  mutate(household_exp = exp(lnhhexp),
+         healthcare_exp = exp(lnexp12m),
+         commune = as.factor(commune))
+
+```
+
+## Questions
+
+**3. Using `clean_indiv_data`, calculate the mean number of illness days (`illdays`) for each commune. Arrange the results from highest to lowest average illness days and display only the top 10 communes.**
+
+```{r}
+# solution for question 3
+
+clean_indiv_data |> 
+  group_by(commune) |> 
+  summarise(mean_illdays = mean(illdays)) |> 
+  arrange(desc(mean_illdays)) |> 
+  slice_head(n = 10) |> 
+  kable()
+```
+
+
+**4. Write a function called `commune_spending()` that takes the following inputs:**
+
+- **takes a dataframe,**
+- **a commune variable, and**
+- **a spending variable**
+
+**The function should calculate the median spending for each commune and return the communes with the highest and lowest median spending.**
+
+::: {.callout-tip}
+Hint: Your function returns a list with separate outputs for the highest and lowest median spending communes.
+:::
+
+```{r}
+# solution for question 4
+
+commune_spending <- function(df, commune_var, spending_var){
   
-  hhspending <- data |>
+  spending_summary <- df |>
     group_by({{commune_var}}) |>
     summarise(median_spending = median({{spending_var}}, na.rm = T))
   
-  minimum <- hhspending |>
-    slice_min(median_spending)
+  lowest <- spending_summary |>
+    slice_min(median_spending, n = 1)
+
+  highest <- spending_summary |>
+    slice_max(median_spending, n = 1)
   
-  
-  maximum <- hhspending |>
-    slice_max(median_spending)
-  
-  list(
-    minimum = minimum,
-    maximum = maximum
-  )
+  list(lowest = lowest, highest = highest)
 }
-
-min_max_hspending(household_data, commune, lnexp12m)
-
 ```
+
+**Run the code below to test your function.**
+
+```{r}
+
+results <- commune_spending(df = clean_household_data,
+                 commune_var = commune,
+                 spending_var = healthcare_exp)
+
+results$highest
+results$lowest
+```
+
