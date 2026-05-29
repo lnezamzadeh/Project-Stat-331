@@ -177,3 +177,42 @@ results$highest
 results$lowest
 ```
 
+
+**5a. Create a visualization exploring the relationship between average illness days and median household healthcare expenditure across communes.**
+
+**To do this:**
+
+- **calculate the mean number of illness days (`illdays`) for each commune using `clean_indiv_data`,**
+- **calculate the median healthcare expenditure (`healthcare_exp`) for each commune using `clean_household_data`,**
+- **join the two summary tables together by `commune`,**
+- **create a scatterplot showing the relationship between these variables.**
+
+::: {.callout-note}
+Your scatterplot should be polished and easy to interpret. Make sure to include informative axis labels and a meaningful title. Since y-axis labels can sometimes be difficult to read vertically, consider whether a subtitle would be a better choice. You may also want to think about adding a smoothing line.
+:::
+
+```{r}
+# solution for question 5a
+
+commune_illdays <- clean_indiv_data |> 
+  group_by(commune) |> 
+  summarise(mean_illdays = mean(illdays, na.rm = T))
+
+commune_healthcare <- clean_household_data |> 
+  group_by(commune) |> 
+  summarise(med_healthcare_exp = median(healthcare_exp, na.rm = T))
+
+commune_illdays |> 
+  left_join(commune_healthcare, by = "commune") |> 
+  ggplot(aes(x = med_healthcare_exp,
+             y = mean_illdays)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Average Illness Days vs. Median Healthcare Expenditure by Commune",
+    subtitle = "Average Illness Days",
+    x = "Median Healthcare Expenditure",
+    y = ""
+  ) 
+```
+

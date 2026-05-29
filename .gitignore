@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-
 *.Rproj
 *.html
+vietnam_ind.csv
+vietnam_hh.csv
