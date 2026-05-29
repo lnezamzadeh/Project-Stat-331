@@ -13,6 +13,7 @@ execute:
   echo: true
   message: false
   warning: false 
+  html-table-processing: none
 ---
 
 ## The Data
@@ -223,7 +224,39 @@ commune_illdays |>
 Solution: Across communes, there appears to be a slight positive relationship between median healthcare expenditure and average illness days. Communes with higher healthcare spending tend to report somewhat higher average illness days, although the relationship is fairly weak and there is still a large amount of variability between communes.
 
 
-**6. Code for question 6 goes here.**
+**6. We want to compare the mean household and mean healthcare spending for communes 1-10. Create a table showcasing these results**
+
+**To do this:**
+
+- **calculate the mean household expenditure (`household_exp`) for communes 1-10 using `clean_household_data`,**
+- **calculate the mean healthcare expenditure (`healthcare_exp`) for communes 1-10 `clean_household_data`,**
+- **create a table**
+
+::: {.callout-note}
+Format the table nicely. Use either kable() and functions in the kableExtra package or gt() and functions from the gt package. The table should include a caption or header and easy to understand, bolded column names.
+:::
+
+
+```{r}
+# solution for question 6
+
+clean_household_data |>
+  filter(commune %in% 1:10) |>
+  group_by(commune) |>
+  summarise(mean_household_dat = mean(household_exp, na.rm = T),
+         mean_healthcare_dat = mean(healthcare_exp, na.rm = T)) |>
+  kable(col.names = c("Commune Number", 
+                      "Mean Household Expenses", 
+                      "Mean Healthcare Expenses"),
+        caption = "Mean household and healthcare spending for communes 1-10.") |>
+  kable_styling(full_width = F, 
+                bootstrap_options = "striped") |>
+  row_spec(row = 0, bold = T, align = "c") |>
+  kable_classic(full_width = F,
+                bootstrap_options = "striped")
+
+```
+
 
 ::: {.callout-important}
 ## Questions 7-10
