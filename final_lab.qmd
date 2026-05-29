@@ -86,7 +86,7 @@ clean_indiv_data <- indiv_data |>
          insurance, lnhhexp, respondent_male = sex) |> 
   mutate(household_exp = exp(lnhhexp),
          across(.cols = c(commune, respondent_male,
-                          injury, insurance),
+                          injury),
                 .fns = as.factor))
 ```
 
@@ -132,6 +132,7 @@ clean_indiv_data |>
   slice_head(n = 10) |> 
   kable()
 ```
+
 
 
 **4. Write a function called `commune_spending()` that takes the following inputs:**
@@ -222,7 +223,15 @@ commune_illdays |>
 Solution: Across communes, there appears to be a slight positive relationship between median healthcare expenditure and average illness days. Communes with higher healthcare spending tend to report somewhat higher average illness days, although the relationship is fairly weak and there is still a large amount of variability between communes.
 
 
-**6. Suppose the probability that an individual has insurance is equal to the proportion observed in `clean_indiv_data`.**
+**6. Code for question 6 goes here.**
+
+::: {.callout-important}
+## Questions 7-10
+
+Questions 7-10 are all related and should be completed in order. You will build on the code, functions, and results from previous questions throughout this section.
+:::
+
+**7. Suppose the probability that an individual has insurance is equal to the proportion observed in `clean_indiv_data`.**
 
 **First calculate the observed insurance rate in the dataset.**
 
@@ -235,25 +244,23 @@ Solution: Across communes, there appears to be a slight positive relationship be
 **Your function should also include input validation to make sure `sample_size` is a single positive number.**
 
 ::: {.callout-tip}
-Hint: You may find `rbinom()` helpful for simulating binary outcomes like insurance status.
+Hint: You may find `rbinom()` helpful for simulating binary outcomes like insurance status. Also, if your code isn't working, check your data cleaning from Problem 2 and make sure `insurance` is not a factor. It should be a numeric variable containing 0s and 1s.
 :::
 
-**6a. Below, write the code to calculate observed insurance rate in the data.**
+**7a. Below, write the code to calculate observed insurance rate in the data.**
 
 ```{r}
-# solution for question 6a
+# solution for question 7a
 
 prop_ins <- clean_indiv_data |> 
-  summarize(obs_insurance_rate = mean(insurance, na.rm = TRUE)) |> 
+  summarise(obs_insurance_rate = mean(insurance, na.rm = TRUE)) |> 
   pull()
-
-prop_ins
 ```
 
-**6b. Next, we will write the function. We will use the observed insurance rate as the probability of success in a simulation. In this case, "success" means that a simulated individual has insurance.**
+**7b. Next, we will write the function. We will use the observed insurance rate as the probability of success in a simulation. In this case, "success" means that a simulated individual has insurance.**
 
 ```{r}
-# solution for question 6b
+# solution for question 7b
 
 simulate_insurance_sample <- function(sample_size){
    if(!is.numeric(sample_size) |
@@ -277,4 +284,86 @@ simulate_insurance_sample(100)
 ```
 
 
+**8. Use `map_dbl()` to run your `simulate_insurance_sample()` function 10,000 times using a sample size of 100. Store the results in an object called `insurance_sim_results`. Before running the simulation, use `set.seed(435)` so that your results can be reproduced.**
+
+```{r}
+# solution for question 8
+
+set.seed(435)
+
+insurance_sim_results <- map_dbl(.x =  1:10000,
+                   .f = ~ simulate_insurance_sample(100))
+```
+
+
+**9. Create a histogram showing the distribution of the simulated insurance rates in `insurance_sim_results`. Choose a reasonable bin width and include an informative title and axis labels.**
+
+::: {.callout-tip}
+## Hint
+
+The output of your simulation is a vector, but `ggplot()` works best with data frames. The `enframe()` function converts a vector into a tibble. Consider renaming the `value` column to something more descriptive, such as `insurance_rate`, before creating your histogram.
+
+Also, think carefully about your choice of `binwidth`. Since the simulated insurance rates do not vary over a very large range, a smaller bin width may help reveal the shape of the distribution more clearly.
+:::
+
+```{r}
+# solution for question 9
+
+insurance_sim_results |>
+  enframe(value = "insurance_rate") |> 
+  ggplot(mapping = aes(x = insurance_rate)) +
+  geom_histogram(binwidth = 0.01, color = "white") +
+  labs(
+    title = "Distribution of Simulated Insurance Rates",
+    subtitle = "Count",
+    x = "Simulated Insurance Rate",
+    y = ""
+  )
+```
+
+**10. The sampling distribution of a sample proportion is approximately normal when the sample size is sufficiently large. Overlay the theoretical normal distribution on top of your histogram from Question 8. Use `prop_ins` as the population proportion and the sample size used in the simulation. Include an informative title and axis labels.**
+
+::: {.callout-note}
+## Hint
+
+You may find the following functions useful:
+
+- `after_stat(density)` to scale the histogram as a density
+- `stat_function()` to add a curve to an existing plot
+- `dnorm()` to evaluate the theoretical normal distribution
+
+For a sample proportion, $\hat{p}$, the theoretical sampling distribution has mean $p$ and standard deviation
+
+$$
+\sqrt{\frac{p(1-p)}{n}}
+$$
+In this lab, we will use `prop_ins` as our estimate of $p$ and $n = 100$, the sample size used in the simulation.
+:::
+
+**First, calculate the theoretical standard deviation of the sampling distribution using the formula from the hint.** 
+
+```{r}
+# solution for question 10
+
+std_ins <- sqrt(((prop_ins)*(1 - prop_ins))/100)
+```
+
+**Now, plot the graph.** 
+
+```{r}
+# solution for question 10
+
+insurance_sim_results |>
+  enframe(value = "insurance_rate") |> 
+  ggplot(mapping = aes(x = insurance_rate)) +
+  geom_histogram(aes(y = after_stat(density)),
+                 binwidth = 0.01, color = "white") +
+  stat_function(fun = ~ dnorm(.x, mean = prop_ins, sd = std_ins),
+                color = "steelblue", lwd = 2) +
+  labs(title = "Empirical vs. Theoretical Distributions of the Insurance Rate",
+       subtitle = "Density",
+       x = "Insurance Rate",
+       y = ""
+)
+```
 
