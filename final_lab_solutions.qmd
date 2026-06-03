@@ -39,6 +39,7 @@ Some variables in this dataset include:
 - `actdays` – number of days of limited activity
 - `pharvis` – number of direct pharmacy visits 
 - `lnhhexp` – log of total household expenditure for the year
+- `commune` – identifier for the respondent's commune (local administrative area) of residence
 
 #### Household-Level Dataset
 
@@ -49,6 +50,11 @@ Some variables in this dataset include:
 - `hhsize` – household size 
 - `lnhhexp` – log of total household expenditure for the year
 - `lnexp12m` – log of household healthcare expenditure over the past 12 months
+- `commune` – identifier for the respondent's commune (local administrative area) of residence
+
+::: {.callout-note}
+Note: A commune is the smallest local administrative unit in Vietnam, similar to a town, village, or neighborhood. Both datasets contain observations from communes, allowing us to compare healthcare use and spending across different communities. The survey contains data from 194 different communes.
+:::
 
 
 **0. Load any libraries you think will be useful for this lab.**

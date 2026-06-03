@@ -32,20 +32,26 @@ Documentation for the individual-level dataset can be found [here](https://vince
 
 Some variables in this dataset include:
 
--   `injury` – whether the individual experienced an injury during the survey period
--   `actdays` – number of days of limited activity
--   `pharvis` – number of direct pharmacy visits
--   `lnhhexp` – log of total household expenditure for the year
+- `injury` – whether the individual experienced an injury during the survey period
+- `actdays` – number of days of limited activity
+- `pharvis` – number of direct pharmacy visits 
+- `lnhhexp` – log of total household expenditure for the year
+- `commune` – identifier for the respondent's commune (local administrative area) of residence
 
 #### Household-Level Dataset
 
-Documentation for the household-level dataset can be found [here](https://vincentarelbundock.github.io/Rdatasets/doc/camerondata/vietnam_hh.html).
+Documentation for the household-level dataset can be found  [here](https://vincentarelbundock.github.io/Rdatasets/doc/camerondata/vietnam_hh.html).
 
 Some variables in this dataset include:
 
--   `hhsize` – household size
--   `lnhhexp` – log of total household expenditure for the year
--   `lnexp12m` – log of household healthcare expenditure over the past 12 months
+- `hhsize` – household size 
+- `lnhhexp` – log of total household expenditure for the year
+- `lnexp12m` – log of household healthcare expenditure over the past 12 months
+- `commune` – identifier for the respondent's commune (local administrative area) of residence
+
+::: {.callout-note}
+Note: A commune is the smallest local administrative unit in Vietnam, similar to a town, village, or neighborhood. Both datasets contain observations from communes, allowing us to compare healthcare use and spending across different communities. The survey contains data from 194 different communes.
+:::
 
 **0. Load any libraries you think will be useful for this lab.**
 
@@ -156,16 +162,22 @@ Your scatterplot should be polished and easy to interpret. Make sure to include 
 **5b. Across communes, do places with higher healthcare spending also tend to report higher average illness days? Briefly describe the relationship shown in your visualization.**
 
 
-**6. We want to compare the mean household and mean healthcare spending for communes 1-10. Create a table showcasing these results.**
+
+**6. We want to compare the mean household and mean healthcare spending for communes 1-10. Create a table showcasing these results. There should be 3 columns: Commune Number, Mean Household Expenses, and Mean Healthcare Expenses.**
 
 **To do this:**
 
--   **calculate the mean household expenditure (`household_exp`) for communes 1-10 using `clean_household_data`,**
--   **calculate the mean healthcare expenditure (`healthcare_exp`) for communes 1-10 `clean_household_data`,**
--   **create a table**
+- **calculate the mean household expenditure (`household_exp`) for communes 1-10 using `clean_household_data`,**
+- **calculate the mean healthcare expenditure (`healthcare_exp`) for communes 1-10 `clean_household_data`,**
+- **create a table**
 
-::: callout-note
-Format the table nicely. Use either kable() and functions in the kableExtra package or gt() and functions from the gt package. The table should include a caption or header and easy to understand, bolded column names.
+::: {.callout-tip}
+Format the table nicely. Use either kable() and functions in the kableExtra package or gt() and functions from the gt package. Your table should include:
+
+- Giving nice column names
+- Using a column header that spans the mean household and mean healthcare spending columns
+- Nicely formatting the spending columns (e.g. make sure numbers are rounded to the nearest whole dollar and properly separated with commas )
+- Giving it a title or a caption
 :::
 
 ```{r}
