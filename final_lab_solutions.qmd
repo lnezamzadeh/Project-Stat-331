@@ -65,7 +65,6 @@ Note: A commune is the smallest local administrative unit in Vietnam, similar to
 library(tidyverse)
 library(knitr)
 library(kableExtra)
-library(scales)
 
 ```
 
@@ -185,8 +184,8 @@ commune_spending <- function(df, commune_var, spending_var){
 ```{r}
 
 results <- commune_spending(df = clean_household_data,
-                 commune_var = commune,
-                 spending_var = healthcare_exp)
+                            commune_var = commune,
+                            spending_var = healthcare_exp)
 
 results$highest
 results$lowest
