@@ -280,6 +280,6 @@ $$ In this lab, we will use `prop_ins` as our estimate of $p$ and $n = 100$, the
 **Now, plot the graph.**
 
 ```{r}
-# code for question 10
+# code for question 10 graph
 
 ```

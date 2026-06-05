@@ -260,22 +260,17 @@ clean_household_data |>
   filter(commune %in% 1:10) |>
   group_by(commune) |>
   summarise(mean_household_dat = mean(household_exp, na.rm = T),
-         mean_healthcare_dat = mean(healthcare_exp, na.rm = T)) |>
+            mean_healthcare_dat = mean(healthcare_exp, na.rm = T)) |>
   kable(col.names = c("Commune Number", 
                       "Mean Household Expenses", 
                       "Mean Healthcare Expenses"),
         caption = "Mean household and healthcare spending 
         for communes 1-10.",
         digits = 2, format.args = list(big.mark = ","))|>
-  kable_styling(full_width = F, 
-                bootstrap_options = "striped") |>
-  row_spec(row = 0, bold = T, align = "c") |>
-  kable_classic(full_width = F,
+  kable_styling(full_width = F,
                 bootstrap_options = "striped") |> 
-  add_header_above(c(" " = 1, "Commune Expenditures" = 2), 
-                   bold = TRUE) |> 
+  add_header_above(c(" " = 1, "Commune Expenditures" = 2), bold = TRUE) |> 
   row_spec(row = 0, bold = T, align = "c")
-
 
 ```
 
@@ -406,7 +401,7 @@ std_ins <- sqrt(((prop_ins)*(1 - prop_ins))/100)
 **Now, plot the graph.** 
 
 ```{r}
-# solution for question 10
+# solution for question 10 graph
 
 insurance_sim_results |>
   enframe(value = "insurance_rate") |> 
